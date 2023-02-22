@@ -1,0 +1,329 @@
+<div *ngIf="auth.user$|async as user" style="display: flex;">
+  <div class="calendar" style="width: 70%; margin:1%; padding: 1%; float:right;">
+    <div class="row text-center">
+      <div class="row text-center">
+        <div class="col-md-4">
+          <div class="btn-group">
+            <div class="btn btn-primary" mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate"
+              (viewDateChange)="closeOpenMonthViewDay()">
+              Previous
+            </div>
+            <div class="btn btn-outline-secondary" mwlCalendarToday [(viewDate)]="viewDate">
+              Today
+            </div>
+            <div class="btn btn-primary" mwlCalendarNextView [view]="view" [(viewDate)]="viewDate"
+              (viewDateChange)="closeOpenMonthViewDay()">
+              Next
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <h3>{{ viewDate | calendarDate:(view + 'ViewTitle'):'en' }}</h3>
+        </div>
+        <div class="col-md-4">
+          <div class="btn-group">
+            <div class="btn btn-primary" (click)="setView(CalendarView.Month)"
+              [class.active]="view === CalendarView.Month">
+              Month
+            </div>
+            <div class="btn btn-primary" (click)="setView(CalendarView.Week)"
+              [class.active]="view === CalendarView.Week">
+              Week
+            </div>
+            <div class="btn btn-primary" (click)="setView(CalendarView.Day)" [class.active]="view === CalendarView.Day">
+              Day
+            </div>
+          </div>
+        </div>
+      </div>
+      <br />
+      <div class="scroller-calendar-view" [ngSwitch]="view">
+        <!-- <div [ngSwitch]="view" style="float:left; width:47%; padding-top:2%;"> -->
+        <mwl-calendar-month-view *ngSwitchCase="CalendarView.Month" [viewDate]="viewDate" [events]="events"
+          [refresh]="refresh" [activeDayIsOpen]="activeDayIsOpen" (dayClicked)="dayClicked($event.day)"
+          (eventClicked)="handleEvent('Clicked', $event.event)" (eventTimesChanged)="eventTimesChanged($event)">
+        </mwl-calendar-month-view>
+        <mwl-calendar-week-view  *ngSwitchCase="CalendarView.Week" [viewDate]="viewDate" [events]="events"
+          [refresh]="refresh" (eventClicked)="handleEvent('Clicked', $event.event)"
+          (eventTimesChanged)="eventTimesChanged($event)">
+        </mwl-calendar-week-view>
+        <mwl-calendar-day-view *ngSwitchCase="CalendarView.Day" [viewDate]="viewDate" [events]="events"
+          [refresh]="refresh" (eventClicked)="handleEvent('Clicked', $event.event)"
+          (eventTimesChanged)="eventTimesChanged($event)">
+        </mwl-calendar-day-view>
+      </div>
+      <ng-template #modalContent let-close="close">
+        <div class="modal-header">
+          <h5 class="modal-title">Event action occurred</h5>
+          <button type="button" class="close" (click)="close()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div>
+            Action:
+            <pre>{{ modalData?.action }}</pre>
+          </div>
+          <div>
+            Event:
+            <pre>{{ modalData?.event | json }}</pre>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" (click)="close()">
+            OK
+          </button>
+        </div>
+
+
+      </ng-template>
+    </div>
+  </div>
+  <mat-tab-group mat-stretch-tabs class="example-stretched-tabs mat-elevation-z4"
+    style="max-height: 612px; width: 60%; padding:0.5%;">
+    <mat-tab label="Events">
+      <mat-card class="mat-mdc-card mdc-card scroller"
+        style="max-height: 612px; max-width: 100% !important; border-width: 5px; flex-direction: column;">
+
+        <div class="flex-grid">
+
+          <div class="col">
+
+            <mat-card-content class="task-cards" style="font: size 12px;">
+              <div class="empty-card-container" *ngIf="eventObjects.length == 0 && events.length==0">
+                <div class="empty-card-content">
+                  No events added
+                </div>
+              </div>
+              <mat-card #events *ngFor="let event of eventObjects" class="task-cards" style="font: size 12px;">
+                <mat-card-content class="task-cards" style="font: size 12px;">
+                  <div class="mat-form-field--inline" style="font: size 12px;">
+                    <mat-form-field class="task-cards" appearance="fill">
+                      <mat-label>Title</mat-label>
+                      <input matInput [(ngModel)]="event.title" (keyup)="refresh.next()" />
+                    </mat-form-field>
+
+                    <mat-form-field class="task-cards" appearance="fill">
+                      <mat-label>Start</mat-label>
+                      <input matInput mwlFlatpickr [(ngModel)]="event.start" (ngModelChange)="refresh.next()"
+                        [altInput]="true" [convertModelValue]="true" [enableTime]="true" dateFormat="Y-m-dTH:i"
+                        altFormat="F j, Y H:i" placeholder="Not set" />
+                    </mat-form-field>
+
+                    <mat-form-field class="task-cards" *ngIf="event.id == 0" appearance="fill">
+                      <mat-label>End</mat-label>
+                      <input matInput mwlFlatpickr [(ngModel)]="event.end" (ngModelChange)="refresh.next()"
+                        [altInput]="true" [convertModelValue]="true" [enableTime]="true" dateFormat="Y-m-dTH:i"
+                        altFormat="F j, Y H:i" placeholder="Not set" />
+                    </mat-form-field>
+
+                    <button mat-mini-fab color="primary" class="task-buttons" *ngIf="event.id==0" (click)="saveEvent(event, user)">
+                      <mat-icon>save</mat-icon>
+                    </button>
+                    <button mat-mini-fab color="primary" class="task-buttons" [ngStyle]="{transform: 'scale(0.8)'
+                  }" *ngIf="event.id != 0" (click)="deleteEvent(event)">
+                      <mat-icon>create</mat-icon>
+                    </button>
+                    <button mat-mini-fab color="primary" class="task-buttons" [ngStyle]="{transform: 'scale(0.8)'
+                  }" *ngIf="event.id != 0" (click)="deleteEvent(event)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                    <button mat-mini-fab color="primary" class="task-buttons" [ngStyle]="{transform: 'scale(0.8)'
+                  }" *ngIf="event.id != 0 && event.completed!=true" (click)="completeEvent(event, event.id)">
+                      <mat-icon>check_mark</mat-icon>
+                    </button>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+
+            </mat-card-content>
+          </div>
+        </div>
+      </mat-card>
+      <div class="task-controls" style="margin:1%;">
+        <button class="btn btn-primary float-right" (click)="addEvent()">
+          Add new
+        </button>
+        <button class="btn btn-danger" *ngIf="events.length > 0" (click)="updateEvents(events)">
+          Save Changes
+        </button>
+      </div>
+    </mat-tab>
+    <mat-tab label="Tasks">
+      <mat-card class="mat-mdc-card mdc-card scroller"
+        style="max-height: 100%; width: 100% !important; border-width: 5px; flex-direction: column;">
+        <div class="flex-grid">
+          <div class="col">
+            <mat-card-content class="task-cards">
+              <div class="empty-card-container" *ngIf="unscheduledTasks.length == 0 && scheduledTasks.length!=0">
+                <div class="empty-card-content">
+                  All tasks are scheduled
+                </div>
+              </div>
+              <div *ngIf="unscheduledTasks.length == 0 && scheduledTasks.length==0">
+                <div class="empty-card-content">
+                  No tasks added
+                </div>
+              </div>
+              <mat-card #tasks *ngFor="let unscheduledtask of unscheduledTasks" class="task-cards">
+                <mat-card-content>
+                  <div class="mat-form-field--inline">
+                    <mat-form-field class="task-cards" appearance="fill">
+                      <mat-label>Title</mat-label>
+                      <input matInput [(ngModel)]="unscheduledtask.title" (keyup)="refresh.next()" />
+                    </mat-form-field>
+
+                    <mat-form-field class="task-cards" appearance="fill">
+                      <mat-label>Estimated Duration (Hours)</mat-label>
+                      <input matInput [(ngModel)]="unscheduledtask.hours" (keyup)="refresh.next()" />
+                    </mat-form-field>
+
+                    <mat-form-field class="task-cards" appearance="fill" *ngIf="unscheduledtask.id == 0">
+                      <mat-label>Deadline</mat-label>
+                      <input matInput mwlFlatpickr [(ngModel)]="unscheduledtask.deadline" (ngModelChange)="refresh.next()"
+                        [altInput]="true" [convertModelValue]="true" [enableTime]="true" dateFormat="Y-m-dTH:i"
+                        altFormat="F j, Y H:i" placeholder="Not set" />
+                    </mat-form-field>
+
+                    <mat-form-field class="task-cards" appearance="fill" *ngIf="unscheduledtask.id == 0">
+                      <mat-label>Priority</mat-label>
+                      <mat-select [(value)]="unscheduledtask.priority">
+                        <mat-option *ngFor="let p of priority" [value]="p">
+                          {{p}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field class="task-cards" appearance="fill" *ngIf="unscheduledtask.id == 0">
+                      <mat-label>Repeating</mat-label>
+                      <mat-select [(value)]="unscheduledtask.repeating">
+                        <mat-option *ngFor="let r of repeated" [value]="r">
+                          {{r}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+
+                    <button mat-mini-fab color="primary" class="task-buttons" *ngIf="unscheduledtask.id == 0"
+                      (click)="saveTask(unscheduledtask, user)">
+                      <mat-icon>save</mat-icon>
+                    </button>
+
+                    <button mat-mini-fab color="primary" class="task-buttons" *ngIf="unscheduledtask.id != 0"
+                      (click)="deleteTask(unscheduledtask)">
+                      <mat-icon>create</mat-icon>
+                    </button>
+
+                    <button mat-mini-fab color="primary" class="task-buttons" *ngIf="unscheduledtask.id != 0"
+                      (click)="deleteTask(unscheduledtask)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                    <button mat-mini-fab color="primary" class="task-buttons" *ngIf="unscheduledtask.id != 0 && !unscheduledtask.completed"
+                      (click)="completeTask(unscheduledtask, unscheduledtask.id)">
+                      <mat-icon>check_mark</mat-icon>
+                    </button>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </mat-card-content>
+          </div>
+        </div>
+      </mat-card>
+      <div class="task-controls" style="margin:1%;">
+        <button class="btn btn-primary float-right" (click)="addTask()">
+          Add new
+        </button>
+        <button class="btn btn-primary float-right" (click)="scheduleTasks(events, unscheduledTasks)">
+          Schedule Tasks
+        </button>
+        <button class="btn btn-danger" *ngIf="unscheduledTasks.length > 0" (click)="updateTasks(tasks)">
+          Save Changes
+        </button>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Scheduled">
+      <mat-card class="mat-mdc-card mdc-card scroller"
+        style="max-height: 100%; width: 100% !important; border-width: 5px; flex-direction: column;">
+        <div class="col">
+          <mat-card-content class="task-cards">
+            <div class="empty-card-container" *ngIf="scheduledTasks.length == 0 && events.length==0">
+              <div class="empty-card-content">
+                No tasks scheduled
+              </div>
+            </div>
+            <mat-card *ngFor="let task of scheduledTasks" class="task-cards">
+              <mat-card-content>
+                <div class="mat-form-field--inline">
+                  <mat-form-field class="task-cards" appearance="fill">
+                    <mat-label>Title</mat-label>
+                    <input matInput [(ngModel)]="task.title" (keyup)="refresh.next()" />
+                  </mat-form-field>
+
+                  <mat-form-field class="task-cards" appearance="fill">
+                      <mat-label>Estimated Duration (Hours)</mat-label>
+                      <input matInput [(ngModel)]="task.hours" (keyup)="refresh.next()" />
+                    </mat-form-field>
+
+                  <mat-form-field class="task-cards" appearance="fill">
+                    <mat-label>Deadline</mat-label>
+                    <input matInput mwlFlatpickr [(ngModel)]="task.deadline" (ngModelChange)="refresh.next()"
+                      [altInput]="true" [convertModelValue]="true" [enableTime]="true" dateFormat="Y-m-dTH:i"
+                      altFormat="F j, Y H:i" placeholder="Not set" />
+                  </mat-form-field>
+
+                  <section class="example-section">
+                    <div style="position: relative; padding: 10px;color: rgb(104, 98, 227);">%{{task.progress}}</div>
+                    <mat-progress-bar color="primary" mode="determinate" value={{task.progress}}>
+                    </mat-progress-bar>
+
+                  </section>
+                  <mat-form-field class="task-cards" appearance="fill">
+                      <mat-label>Priority</mat-label>
+                      <mat-select [(value)]="task.priority">
+                        <mat-option *ngFor="let p of priority" [value]="p">
+                          {{p}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+  
+                    <mat-form-field class="task-cards" appearance="fill">
+                      <mat-label>Repeating</mat-label>
+                      <mat-select [(value)]="task.repeating">
+                        <mat-option *ngFor="let r of repeated" [value]="r">
+                          {{r}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+  
+                    <button mat-mini-fab color="primary" class="task-buttons" *ngIf="task.id == 0"
+                      (click)="saveTask(task, user)">
+                      <mat-icon>save</mat-icon>
+                    </button>
+                  <div class="task-buttons">
+                    <button mat-mini-fab color="primary" class="task-buttons" *ngIf="!task.completed"
+                      (click)="completeTask(task, task.id)">
+                      <mat-icon>check_mark</mat-icon>
+                    </button>
+
+                    <button mat-mini-fab color="primary" class="task-buttons" (click)="deleteTask(task)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+
+                    <button mat-mini-fab color="primary" class="task-buttons" (click)="deleteTask(task)">
+                      <mat-icon>create</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </mat-card-content>
+        </div>
+      </mat-card>
+      <div class="task-controls" style="margin:1%;">
+        <button class="btn btn-danger" *ngIf="tasks.length > 0" (click)="updateTasks(tasks)">
+          Save Changes
+        </button>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+  <div>

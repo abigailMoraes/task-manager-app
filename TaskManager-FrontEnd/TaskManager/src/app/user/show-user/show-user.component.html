@@ -1,0 +1,30 @@
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>UserName</th>
+            <th>FirstName</th>
+            <th>LastName</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Options</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let dataItem of UserList">
+            <td>{{dataItem.username}}</td>
+            <td>{{dataItem.firstname}}</td>
+            <td>{{dataItem.lastname}}</td>
+            <td>{{dataItem.email}}</td>
+            <td>{{dataItem.phone}}</td>
+            <td>
+                <button type="button" class="btn btn-light mr-1">
+                    Edit
+                </button>
+                <button type="button" class="btn btn-light mr-1">
+                    Delete
+                </button>
+            </td>
+        </tr>
+    </tbody>
+</table>

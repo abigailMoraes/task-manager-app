@@ -1,0 +1,42 @@
+
+
+.mat-nav-list-item {
+    padding-left: 50px;
+    padding-right: 74px;
+}
+
+  
+.logo{
+    font-size: large;
+}
+
+.container{
+    width: 100%;
+}
+
+.mat-toolbar{
+    width: 100%;
+}
+
+.mat-card {
+    max-width: 600px;
+    margin: 2%;
+    text-align: center;
+    background-color: #3f51b5;
+    color:aliceblue;
+  }
+
+  
+.task-cards{
+    margin: 2% !important; 
+}
+  
+.mat-form-field {
+    display: block;
+  }
+
+.logo-icon-login{
+    
+    width: 100%;
+}
+

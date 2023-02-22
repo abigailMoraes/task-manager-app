@@ -1,0 +1,156 @@
+/* You can add global styles to this file, and also import other style files */
+@import "../node_modules/angular-calendar/css/angular-calendar.css";
+@import '../node_modules/flatpickr/dist/flatpickr.min.css';
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+/* .flex-grid{
+
+    display:flex;
+    margin: 0.5;
+
+}
+
+.col{
+    flex:1;
+    margin: 0.5%;
+} */
+
+
+
+.mat-mini-fab {
+    background: #3f51b5;
+    color: aliceblue;
+
+}
+
+.col-md-4{
+    margin-bottom: 1%;
+}
+
+.task-buttons{
+    padding: 2%;
+}
+
+.mat-toolbar {
+    background: #3f51b5;
+    color: #fff;
+    box-shadow: 0 3px 5px -1px #0003, 0 6px 10px #00000024, 0 1px 18px #0000001f;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+
+}
+
+  .example-section {
+    display: flex;
+    align-content: center;
+    align-items: center;
+    height: 60px;
+  }
+
+
+.mat-mdc-card.task-cards {
+
+    margin: 0.5%;
+    display: 'block';
+
+}
+
+.mat-mdc-form-field.task-cards {
+    margin: 0.2%;
+    padding: 0.2%;
+    margin: 0.5%;
+    display: 'block';
+}
+
+.mdc-text-field--no-label:not(.mdc-text-field--textarea) .mat-mdc-form-field-input-control.mdc-text-field__input,
+.mat-mdc-text-field-wrapper .mat-mdc-form-field-input-control {
+    width: fit-content;
+}
+
+.task-cards .btn {
+    margin: 0.1%;
+}
+
+.mat-mdc-fab.mat-primary,
+.mat-mdc-mini-fab.mat-primary {
+    margin: 0.5%;
+}
+
+.task-controls .btn {
+    margin: 0.1%;
+}
+
+.mat-mdc-card-content {
+    padding: 1%;
+}
+
+.mat-mdc-card {
+    overflow-y: auto;
+}
+
+.empty-card-content {
+    justify-content: center;
+    display: flex;
+}
+
+.empty-card-container {
+    display: grid;
+}
+
+
+.scroller {
+    width: 100%;
+    height: 420px;
+    max-height: 420px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    flex-direction: column-reverse;
+    border-width: 3px;
+}
+
+.scroller-calendar-view {
+    width: 100%;
+    height: 540px;
+    max-height: 700px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    flex-direction: column-reverse;
+    border-width: 3px;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 5px;
+    border-radius: 5px;
+    padding: 1%;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #eee;
+    border-radius: 5px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #767976;
+    border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #4e4d4d;
+    border-radius: 5px;
+}
