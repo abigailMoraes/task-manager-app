@@ -107,11 +107,11 @@ DATABASES = {
     #     'PORT': '5432',
     # }
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'TaskManagerDatabase', 
-        'USER': 'postgres', 
-        'PASSWORD': 'Chaeastone1917',
-        'HOST': '127.0.0.1', 
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres', 
+        'USER': 'postgres',
+        'PASSWORD': 'password',
+        'HOST': 'db', 
         'PORT': '5432',
     }
 }

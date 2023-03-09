@@ -9,7 +9,10 @@ import { CalendarEvent} from 'angular-calendar';
 
 export class SharedService {
   
-readonly APIUrl = "http://127.0.0.1:8000";
+//readonly APIUrl = "http://127.0.0.1:8000";
+//readonly APIUrl = "http://54.157.131.72:8000";
+//readonly APIUrl = "https://ec2-54-157-131-72.compute-1.amazonaws.com";
+readonly APIUrl = "http://127.0.0.1:80";
 //readonly APIUrl = "https://taskmanagerheroku-app.herokuapp.com";
   
   constructor(private http:HttpClient) { }

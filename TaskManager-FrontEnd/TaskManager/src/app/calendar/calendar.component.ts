@@ -224,7 +224,7 @@ export class DemoComponent implements OnInit, AfterViewInit {
     });
     console.log(user.nickname);
     console.log(found);
-    if (!!found) {
+    if (found === false) {
       var val = {
         username: user.nickname,
         firstname: user.given_name,
