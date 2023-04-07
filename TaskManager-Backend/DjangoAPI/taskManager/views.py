@@ -17,9 +17,12 @@ def userApi(request,uname=""):
     elif request.method =='POST':
         user_data = JSONParser().parse(request)
         user_serializer = UserSerializer(data=user_data)
+        
         if user_serializer.is_valid():
             user_serializer.save()
             return JsonResponse("Added Successfully!", safe=False)
+
+        print(user_serializer.errors)
         return JsonResponse("Failed to Add.", safe=False)
     
     elif request.method=='PUT':
@@ -79,8 +82,8 @@ def eventsApi(request,uname=""):
 def taskApi(request,id=0):
     if request.method == 'GET':
         tasks = Task.objects.all()
-        task_serializer = TaskSerializer(events, many=True)
-        return JsonResponse(Event_serializer.data, safe=False)
+        task_serializer = TaskSerializer(tasks, many=True)
+        return JsonResponse(task_serializer.data, safe=False)
 
     elif request.method == 'POST':
         task_data = JSONParser().parse(request)
