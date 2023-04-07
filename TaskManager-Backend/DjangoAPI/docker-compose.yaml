@@ -19,3 +19,10 @@ services:
       - "80:80"
     depends_on:
       - db
+    links:
+      - db:db
+    networks:
+      - djangonetwork
+  networks:
+    djangonetwork:
+      driver: bridge
